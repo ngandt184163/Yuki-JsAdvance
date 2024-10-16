@@ -131,3 +131,37 @@ export const addQuestions = async (datas) => {
     alert("Thêm lỗi");
   }
 };
+
+export const addUser = async (data) => {
+  try {
+    const res = await fetch("http://localhost:3000/users", {
+      method: "post", // phương thức thêm mới
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data), // chuyển dữ liệu từ object -> JSON
+    }); // res là res trả về nếu thêm thành công
+
+    const dataRes = await res.json();
+    return dataRes;
+  } catch (error) {
+    alert("Thêm lỗi");
+  }
+};
+
+export const getTop10 = async (id) => {
+  try {
+    // call api lấy danh sách users
+    const res = await fetch(`http://localhost:3000/users?quizId=${id}`); // call api: bất đồng bộ
+    const data = await res.json();
+
+    // Lấy 10 user có thuộc tính score cao nhất
+    const top10Users = data
+      .sort((a, b) => b.score - a.score) // Sắp xếp theo score giảm dần
+      .slice(0, 10); // Lấy 10 user đầu tiên
+
+    return top10Users;
+  } catch (error) {
+    alert("Lỗi");
+  }
+};

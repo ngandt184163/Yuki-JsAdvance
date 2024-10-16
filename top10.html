@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Top 10</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+      crossorigin="anonymous"
+    />
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <button type="button" class="back btn btn-primary">Back to quiz</button>
+    <button type="button" class="back btn btn-primary">
+      <a style="text-decoration: none; color: white" href="quiz.html"
+        >Go home</a
+      >
+    </button>
+
+    <div class="container">
+      <div class="d-flex justify-content-between bg-danger-subtle px-3">
+        <div id="">
+          <h1 id="title"></h1>
+        </div>
+      </div>
+      <div id="top10" class="mt-3"></div>
+    </div>
+  </body>
+  <script type="module">
+    import { getTop10 } from "../services/api.js";
+    const app = {
+      handle: async function () {
+        var title = document.getElementById("title");
+        title.innerText = "Danh sach top 10";
+        var top10 = document.getElementById("top10");
+        top10.innerHTML = `
+        <table class="table">
+            <thead>
+                <tr>
+                <th scope="col">stt</th>
+                <th scope="col">name</th>
+                <th scope="col">score</th>
+                <th scope="col">time</th>
+                </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+        </table>
+    `;
+
+        // 1. Lấy id trên url http://127.0.0.1:5501/question.html?id=abcd
+        const searchParam = new URLSearchParams(window.location.search);
+
+        // console.log(searchParam);
+        if (searchParam.has("quizId")) {
+          var id = searchParam.get("quizId");
+        }
+        // lay ds top 10
+        const listTop10 = await getTop10(id);
+        console.log(listTop10);
+        var tbody = document.querySelector("tbody");
+        var i = 1;
+        tbody.innerHTML = listTop10
+          ?.map((item) => {
+            return `
+        <tr>
+            <th scope="row">${i++}</th>
+            <td>${item.name}</td>
+            <td>${item.score}</td>
+            <td>@${item.time}</td>
+        </tr>
+        `;
+          })
+          .join("");
+
+        var btn = document.getElementsByClassName("back")[0];
+        btn.addEventListener("click", function () {
+          window.location.href = `question.html?id=${id}`;
+        });
+      },
+      start: function () {
+        this.handle();
+      },
+    };
+    app.start();
+  </script>
+</html>
